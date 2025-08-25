@@ -1,6 +1,6 @@
 {
-  "name": "Cough Tracker",
-  "short_name": "Coughs",
+  "name": "Koftrak",
+  "short_name": "Koftrak",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F2F2F7",
