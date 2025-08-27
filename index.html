@@ -87,8 +87,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 32px 16px;
+            /*justify-content: center;*/
+            /*padding: 32px 16px;*/
             min-height: calc(100vh - 120px);
         }
 
@@ -148,6 +148,25 @@
 
         .type-btn:hover:not(.active) {
             color: var(--ios-text);
+        }
+
+        /* Style the note input */
+        .type-input {
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          font-size: 0.95rem;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          background-color: #fafafa;
+          color: #333;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .type-input:focus {
+          border-color: #007aff; /* match iOS blue */
+          box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
+          background-color: #fff;
         }
 
         /* Record button */
@@ -335,6 +354,117 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
+
+        .record-btn {
+  position: relative;
+  width: 200px;          /* adjust to your design */
+  height: 200px;
+  border-radius: 50%;
+  border: none;
+  /*    background: radial-gradient(circle at 30% 30%, #1e90ff, #0050c8);*/
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 80, 200, 0.4),
+              inset 0 4px 8px rgba(255, 255, 255, 0.2),
+              inset 0 -4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.3s ease;
+  
+}
+
+/* spiral stripes */
+    .record-btn .spiral {
+      position: absolute; inset: 0; border-radius: 50%;
+      background:
+        repeating-conic-gradient(
+          from var(--angle, 0deg),
+          rgba(255,255,255,.45) 0 6deg,
+          transparent 6deg 18deg
+        );
+      /* fade center + edges so it suggests a spiral rather than hard slices */
+      -webkit-mask:
+        radial-gradient(circle at 50% 50%,
+          transparent 0 6%,
+          black 14% 80%,
+          transparent 92% 100%);
+              mask:
+        radial-gradient(circle at 50% 50%,
+          transparent 0 6%,
+          black 14% 80%,
+          transparent 92% 100%);
+      mix-blend-mode: screen;
+      animation: spin 7s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes spin { to { --angle: -360deg; } }
+
+
+
+/* funky animated border glow */
+.record-btn::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    #ff4d4d,
+    #ffcc00,
+    #4dff4d,
+    #00e6e6,
+    #4d4dff,
+    #ff4dff,
+    #ff4d4d
+  );
+  /*-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);*/
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin 1s linear infinite;
+}
+
+/* press effect */
+.record-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 10px rgba(0, 80, 200, 0.3),
+              inset 0 2px 4px rgba(255, 255, 255, 0.2),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* glowing pulsing ring */
+.record-btn::after {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.2);
+  animation: pulse 2s infinite;
+  z-index: -1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+    
+    .record-btn {
+  position: relative;
+  width: 200px; height: 200px; border-radius: 50%;
+  border: none; cursor: pointer; color: #fff; font-weight: 700;
+  background: radial-gradient(circle at 30% 30%, #1e90ff, #0050c8);
+  overflow: hidden;
+}
+
+
     </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -350,19 +480,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1>Cough Tracker</h1>
-                <button class="export-btn" onclick="exportCSV()">
-                    <div class="icon" style="width: 16px; height: 16px;">
-                        <svg><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
-                    </div>
-                    Export CSV
-                </button>
-            </div>
-        </header>
-
+        
         <!-- Main content -->
         <main class="main">
             <div class="content">
@@ -370,7 +488,6 @@
                 <!-- Type Selector -->
                 <div class="card">
                     <div class="card-content type-selector">
-                        <h2>Select Cough Type</h2>
                         <div class="type-buttons">
                             <button class="type-btn active" onclick="selectType('Small')">Small</button>
                             <button class="type-btn" onclick="selectType('Medium')">Medium</button>
@@ -382,19 +499,30 @@
                 <!-- Record Button -->
                 <div class="record-section">
                     <button class="record-btn" onclick="recordCough()">
+                        <i class="spiral" aria-hidden="true"></i>
                         <div class="icon">
                             <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
                         </div>
-                        <span class="text-lg">Record</span>
-                        <span class="text-sm">Cough</span>
+
                     </button>
                 </div>
-
+                <div class="card">
+                    <div class="card-content type-selector">
+                        <div class="type-buttons">
+                            <input class="type-input" id="note"></input>   
+                        </div>
+                    </div>
+                </div>
                 <!-- Recent Entries -->
                 <div class="card">
                     <div class="card-content">
                         <div class="recent-header">
-                            <h3>Recent Entries</h3>
+                            <button class="export-btn" onclick="exportCSV()">
+                                <div class="icon" style="width: 16px; height: 16px;">
+                                    <svg><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                                </div>
+                                Export CSV
+                            </button>
                             <span class="entry-count" id="entryCount">0 entries</span>
                         </div>
                         
@@ -421,6 +549,7 @@
         // App state
         let selectedType = 'Small';
         let entries = [];
+        let note = '';
         const STORAGE_KEY = 'cough_entries';
 
         // Initialize app
@@ -462,15 +591,17 @@
             event.target.classList.add('active');
         }
 
+        
         // Record cough
         function recordCough() {
             try {
                 const entry = {
                     id: generateId(),
                     type: selectedType,
+                    note: document.getElementById('note').value,
                     timestamp: new Date()
                 };
-
+                document.getElementById('note').value = '';   
                 entries.unshift(entry);
                 saveEntries();
                 renderEntries();
@@ -531,7 +662,7 @@
                 entriesList.innerHTML = `
                     <div class="empty-state">
                         <div class="icon">
-                            <svg><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
                         </div>
                         <p>No cough events recorded yet</p>
                         <p>Tap the record button to start tracking</p>
@@ -540,22 +671,35 @@
                 return;
             }
 
-            entriesList.innerHTML = entries.slice(0, 10).map(entry => `
-                <div class="entry-item">
-                    <div class="entry-info">
-                        <div class="entry-dot"></div>
-                        <div class="entry-details">
-                            <div class="entry-type">${entry.type}</div>
-                            <div class="entry-time">${formatDisplayTime(entry.timestamp)}</div>
+            entriesList.innerHTML = entries.slice(0, 10).map(entry => {
+                const noteText = entry.note 
+                    ? (entry.note.length > 10 ? entry.note.slice(0, 10) + "…" : entry.note) 
+                    : "";
+
+                return `
+                    <div class="entry-item">
+                        <div class="entry-info">
+                            <div class="entry-dot"></div>
+                            <div class="entry-details">
+                                <div class="entry-type">
+                                    ${entry.type} ${noteText ? `<span class="entry-note">(${noteText})</span>` : ""}
+                                </div>
+                                <div class="entry-time">${formatDisplayTime(entry.timestamp)}</div>
+                            </div>
                         </div>
+                        <button class="delete-btn" onclick="deleteEntry('${entry.id}')">
+                            <div class="icon" style="width: 16px; height: 16px;">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="3,6 5,6 21,6"></polyline>
+                                    <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4
+                                             a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                                </svg>
+                            </div>
+                        </button>
                     </div>
-                    <button class="delete-btn" onclick="deleteEntry('${entry.id}')">
-                        <div class="icon" style="width: 16px; height: 16px;">
-                            <svg><polyline points="3,6 5,6 21,6"></polyline><path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path></svg>
-                        </div>
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+
         }
 
         // Export to CSV
@@ -566,20 +710,21 @@
             }
 
             try {
-                const headers = ['Timestamp', 'Date', 'Time', 'Cough Type'];
+                const headers = ['Timestamp', 'Date', 'Time', 'Cough Type', 'Note'];
                 const rows = entries.map(entry => {
                     const date = new Date(entry.timestamp);
                     return [
                         entry.timestamp.toString(),
-                        date.toLocaleDateString('en-US'),
-                        date.toLocaleTimeString('en-US'),
-                        entry.type
+                        date.toLocaleDateString('en-GB'),
+                        date.toLocaleTimeString('en-GB'),
+                        entry.type,
+                        entry.note
                     ];
                 });
 
                 const csvContent = [headers, ...rows]
                     .map(row => row.map(field => `"${field}"`).join(','))
-                    .join('\\n');
+                    .join('\n');
 
                 const filename = `cough-tracker-${new Date().toISOString().split('T')[0]}.csv`;
                 
@@ -609,7 +754,7 @@
 
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3000);
+            }, 2000);
         }
     </script>
 </body>
